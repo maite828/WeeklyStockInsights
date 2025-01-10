@@ -1,11 +1,12 @@
-version: "3.9"
+version: '3.8'
+
 services:
-  python-app:
+  cron:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-cron
     volumes:
       - ./app:/app
-    ports:
-      - "8000:8000"
-    container_name: python-env
+      - /volume1/docker/logs:/volume1/docker/logs
+    restart: always
+

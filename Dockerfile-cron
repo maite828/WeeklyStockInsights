@@ -1,0 +1,24 @@
+FROM python:3.8-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends cron tzdata && \
+    ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /volume1/docker/logs && \
+    chown -R root:root /volume1/docker/logs
+
+COPY app/requirements.txt /app/
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+COPY app/ /app/
+
+COPY cronfile /etc/cron.d/cronfile
+RUN chmod 0777 /etc/cron.d/cronfile
+RUN crontab /etc/cron.d/cronfile
+
+CMD ["cron", "-f"]
+
